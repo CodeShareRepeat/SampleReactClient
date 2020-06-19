@@ -1,6 +1,5 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-import { prependOnceListener } from "cluster";
 
 type Props = {
   label: string;
@@ -20,6 +19,7 @@ export default function SearchTextBox(props: Props) {
         label={props.label}
         helperText={props.helperText}
         onChange={handleChange}
+        fullWidth={true}
       />
     </div>
   );
