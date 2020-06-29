@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 type Props = {
   label: string;
   helperText: string;
+  searchString : string;
   onTextChanged: (textValue: string) => void;
 };
 
@@ -16,6 +17,7 @@ export default function SearchTextBox(props: Props) {
   return (
     <div>
       <TextField
+        value={props.searchString}
         label={props.label}
         helperText={props.helperText}
         onChange={handleChange}

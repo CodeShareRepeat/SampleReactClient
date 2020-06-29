@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Paper, Grid, Button } from "@material-ui/core";
+import { Container, Paper, Grid, Button, Switch } from "@material-ui/core";
 import SearchTextBox from "./searchTextBox";
 import { StateDetails } from "./stateDetails";
 import ResultList from "./resultList";
@@ -12,6 +12,7 @@ type componentStateType = {
   error: boolean;
   searchText: string;
   result: ResultItem[];
+  showStateDetails: boolean;
 };
 
 export default function MainForm() {
@@ -21,6 +22,7 @@ export default function MainForm() {
     isSearching: false,
     searchText: "",
     result: [],
+    showStateDetails: false,
   });
 
   useEffect(() => {
@@ -36,36 +38,28 @@ export default function MainForm() {
   }, [componentState.searchText]);
 
   function onSearchButtonClick() {
-    // move to external function
-
     // call
     const instance = axios.create({
       baseURL: "http://localhost:4000/",
       timeout: 1000,
-      // headers: { "X-Custom-Header": "foobar" },
     });
 
     instance
       .get("all")
       .then((response: any) => {
-        let y = response.data;
         setComponentState((prevState: componentStateType) => {
-          return { ...prevState, result: y };
+          return { ...prevState, result: response.data };
         });
-        debugger;
-        // let resultList = JSON.parse(response.data);
-        // debugger;
-
-        // //  response.data.map((item: any) => {
-        // //    let mappedItem = {item.name}
-        // //  });
-
-        // setComponentState((prevState: componentStateType) => {
-        //   return { ...prevState, result: resultList };
-        // });
       })
-
       .catch((error: any) => {
+        setComponentState((prevState: componentStateType) => {
+          return { ...prevState, result: [] };
+        });
+
+        setComponentState((prevState: componentStateType) => {
+          return { ...prevState, searchText: "" };
+        });
+
         alert(error);
       });
   }
@@ -81,6 +75,13 @@ export default function MainForm() {
     });
   }
 
+  function showHideStateDetails(event: any) {
+    setComponentState({
+      ...componentState,
+      showStateDetails: event.target.checked,
+    });
+  }
+
   return (
     <div>
       <p></p>
@@ -89,6 +90,7 @@ export default function MainForm() {
           <Grid container spacing={2} justify="center" alignItems="center">
             <Grid item xs={2}>
               <SearchTextBox
+                searchString={componentState.searchText}
                 helperText="type * or te*xt to search"
                 label="searchstring"
                 onTextChanged={handleSearchStringChanged}
@@ -104,12 +106,22 @@ export default function MainForm() {
                 get it!
               </Button>
             </Grid>
+            <Grid item xs={2}>
+              <Switch
+                checked={componentState.showStateDetails}
+                onChange={showHideStateDetails}
+                inputProps={{ "aria-label": "secondary checkbox" }}
+              />
+            </Grid>
 
             <Grid item xs={9}>
               <ResultList tableData={componentState.result} />
             </Grid>
             <Grid item xs={12}>
-              <StateDetails display={true} stateToDisplay={componentState} />
+              <StateDetails
+                display={componentState.showStateDetails}
+                stateToDisplay={componentState}
+              />
             </Grid>
           </Grid>
         </Paper>
