@@ -44,24 +44,30 @@ export default function MainForm() {
       timeout: 1000,
     });
 
-    instance
-      .get("all")
-      .then((response: any) => {
-        setComponentState((prevState: componentStateType) => {
-          return { ...prevState, result: response.data };
-        });
-      })
-      .catch((error: any) => {
-        setComponentState((prevState: componentStateType) => {
-          return { ...prevState, result: [] };
-        });
+    if (
+      componentState.searchPossible === true &&
+      componentState.isSearching === false &&
+      componentState.searchText !== ""
+    ) {
+      instance
+        .get("search?searchstring=" + componentState.searchText)
+        .then((response: any) => {
+          setComponentState((prevState: componentStateType) => {
+            return { ...prevState, result: response.data };
+          });
+        })
+        .catch((error: any) => {
+          setComponentState((prevState: componentStateType) => {
+            return { ...prevState, result: [] };
+          });
 
-        setComponentState((prevState: componentStateType) => {
-          return { ...prevState, searchText: "" };
-        });
+          setComponentState((prevState: componentStateType) => {
+            return { ...prevState, searchText: "" };
+          });
 
-        alert(error);
-      });
+          alert(error);
+        });
+    }
   }
 
   function handleSearchStringChanged(this: any, searchString: string) {
